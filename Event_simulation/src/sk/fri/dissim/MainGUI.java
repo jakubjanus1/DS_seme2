@@ -3,7 +3,10 @@ package sk.fri.dissim;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 import sk.fri.dissim.Simulation.FiredEventNames;
+import sk.fri.dissim.Simulation.ResourceTransportSimulation;
+import sk.fri.dissim.Simulation.Statistics;
 
 /**
  *
@@ -12,6 +15,7 @@ import sk.fri.dissim.Simulation.FiredEventNames;
 public class MainGUI extends javax.swing.JFrame {
 
     private PropertyChangeSupport propertyChangeSupport;
+	private ResourceTransportSimulation resourceTransportSimulation;
 
 	/**
 	 * Creates new form MainGUI
@@ -23,13 +27,13 @@ public class MainGUI extends javax.swing.JFrame {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				timer.setText(evaluateActualTime(evt.getNewValue()));
+				timer.setText(evaluateActualTime((double)evt.getNewValue()));
 			}
 		});
 	}
 
 
-	private String evaluateActualTime(int time) {
+	private String evaluateActualTime(double time) {
 		int hours = (int)((int)time / 3600);
 		double tmp = time - hours * 3600;
 		int minutes = (int)(tmp / 60);
@@ -70,6 +74,8 @@ public class MainGUI extends javax.swing.JFrame {
 
         jLabel1.setText("Počet replikácií:");
 
+        jSpinner1.setValue(10000);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -78,7 +84,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinner1, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(jSpinner1)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -104,6 +110,11 @@ public class MainGUI extends javax.swing.JFrame {
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sk/fri/dissim/play.png"))); // NOI18N
         jButton1.setText("Štart");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sk/fri/dissim/pause.png"))); // NOI18N
         jButton2.setText("Zastaviť");
@@ -157,7 +168,7 @@ public class MainGUI extends javax.swing.JFrame {
                                 .addComponent(jButton2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton3)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 10, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -191,10 +202,10 @@ public class MainGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(522, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(503, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,6 +231,32 @@ public class MainGUI extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 		propertyChangeSupport.firePropertyChange(FiredEventNames.END_SIMULATION, -1, 0);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+		if(resourceTransportSimulation == null || resourceTransportSimulation.isFinished()) {
+			try {
+				resourceTransportSimulation = new ResourceTransportSimulation((int)jSpinner1.getValue(), 86400, propertyChangeSupport) {
+
+					@Override
+					protected void done() {
+
+					}
+
+					@Override
+					protected void process(List<Statistics> chunks) {
+
+					}
+				};
+				propertyChangeSupport.firePropertyChange(FiredEventNames.SLEEP_SPEED_CHANGED, -1, jSlider1.getValue());
+				resourceTransportSimulation.execute();
+			}
+			catch(Exception e) {
+				System.out.println(e.getMessage());
+			}
+		} else if (resourceTransportSimulation != null && !resourceTransportSimulation.isFinished()) {
+			propertyChangeSupport.firePropertyChange(FiredEventNames.CONTINUE_SIMULATION, -1, 0);
+		}
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 	/**
 	 * @param args the command line arguments

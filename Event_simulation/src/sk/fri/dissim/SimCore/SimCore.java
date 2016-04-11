@@ -14,6 +14,7 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 
 	protected boolean isPaused;
 	protected boolean terminateSimulation;
+	protected boolean isFinished;
 	protected int actualNumberOfReplication;
 	protected int numberOfReplications;
 	protected T statisticModul;
@@ -25,6 +26,7 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 		this.statisticModul = statisticModulClass.newInstance();
 		isPaused = false;
 		terminateSimulation = false;
+		isFinished = false;
 		this.numberOfReplications = numberOfReplications;
 		this.timeOfOneReplication = timeOfOneReplication;
 		eventQueue = new ArrayList<>();
@@ -36,7 +38,11 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 		while(!eventQueue.isEmpty()) {
 			event = eventQueue.remove(0);
 			simulationTime = event.getExecutionTime();
-			event.execute();
+			if(timeOfOneReplication >= simulationTime || timeOfOneReplication < 0) {
+				event.execute();
+			} else {
+				eventQueue.clear();
+			}
 		}
 	}
 
@@ -66,6 +72,10 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 		return numberOfReplications;
 	}
 
+	public boolean isFinished() {
+		return isFinished;
+	}
+
 	public T getStatisticModul() {
 		return statisticModul;
 	}
@@ -87,6 +97,7 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 				break;
 			}
 		}
+		isFinished = true;
 		return statisticModul;
 	}
 

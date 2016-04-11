@@ -26,6 +26,27 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 				sleepInterval = (int)evt.getNewValue();
 			}
 		});
+		this.propertyChangeSupport.addPropertyChangeListener(FiredEventNames.PAUSE_SIMULATION, new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				isPaused = true;
+			}
+		});
+		this.propertyChangeSupport.addPropertyChangeListener(FiredEventNames.END_SIMULATION, new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				terminateSimulation = true;
+			}
+		});
+		this.propertyChangeSupport.addPropertyChangeListener(FiredEventNames.CONTINUE_SIMULATION, new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				isPaused = false;
+			}
+		});
 	}
 
 	@Override
