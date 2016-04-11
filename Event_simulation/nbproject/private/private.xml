@@ -4,9 +4,15 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/MainGUI.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Events/ArrivalToLoadingStationEvent.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Simulation/EntryData.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Entities/Truck.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Events/ArrivalToUnloadingStationEvent.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Simulation/Statistics.java</file>
             <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Simulation/ResourceTransportSimulation.java</file>
-            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Simulation/FiredEventNames.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Events/TruckLoadingEvent.java</file>
             <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/SimCore/SimCore.java</file>
+            <file>file:/D:/Skola/Dissim/DS_seme2/Event_simulation/src/sk/fri/dissim/Entities/TruckState.java</file>
         </group>
     </open-files>
 </project-private>
