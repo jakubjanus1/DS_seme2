@@ -33,6 +33,9 @@ public class ArrivalToLoadingStationEvent extends BaseSimulationEvent {
 			}
 		} else {
 			truck.setState(TruckState.IDLE);
+			if(core.finished()) {
+				core.getStatisticModul().finishReplication(executionTime);
+			}
 		}
 		core.fireTrucksUpdate();
 	}

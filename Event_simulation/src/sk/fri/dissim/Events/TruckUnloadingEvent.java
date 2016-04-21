@@ -26,6 +26,7 @@ public class TruckUnloadingEvent extends BaseSimulationEvent {
 			truck.setState(TruckState.ON_ROAD_TO_POINT_C);
 		}
 		truck.setActualCapacity(0);
+		core.getStatisticModul().incNumberOfUnloadings();
 		core.addEvent(new ArrivalToPointCEvent(truck, core, executionTime + truck.travelingTime(EntryData.B_C) + repairTime));
 		
 		if(!core.getQueueB().isEmpty()) {

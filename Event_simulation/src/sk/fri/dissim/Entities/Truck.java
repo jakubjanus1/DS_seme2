@@ -38,6 +38,8 @@ public class Truck {
 	public void reset() {
 		waitingForLoadingTime = 0.0;
 		waitingForUnloadingTime = 0.0;
+		startedWaitingForLoading = 0.0;
+		startedWaitingForUnloading = 0.0;
 		onRoadUntil = 0.0;
 		actualCapacity = 0;
 		state = TruckState.WAITING_FOR_LOADING;

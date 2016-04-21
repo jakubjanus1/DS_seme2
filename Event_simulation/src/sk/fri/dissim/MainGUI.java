@@ -52,6 +52,28 @@ public class MainGUI extends javax.swing.JFrame {
 				updateTruck((TrucksModel)evt.getNewValue());
 			}
 		});
+		propertyChangeSupport.addPropertyChangeListener(FiredEventNames.UPDATE_STATISTICS, new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				processStatistics((Statistics)evt.getNewValue());
+			}
+		});
+	}
+
+	private void processStatistics(Statistics s) {
+		averageLoading.setText("" + String.format("%3.4f hod.", s.getAverageWaitingForLoading()));
+		averageUnloading.setText("" + String.format("%3.4f hod.", s.getAverageWaitingForUnloading()));
+		averageFinishedTime.setText("" + String.format("%3.4f hod.", s.getAverageFinishingTime()));
+        confidenceInterval.setText("<" + String.format("%3.4f",s.getConfidenceInterval(-1.645)) + ", " + String.format("%3.4f",s.getConfidenceInterval(1.645)) + ">");
+		averageLoadingQueue.setText("" + String.format("%3.6f", s.getAverageTrucksPerLoading()));
+		averageUnloadingQueue.setText("" + String.format("%3.6f", s.getAverageTrucksPerUnloading()));
+		averageLoadingPerOneAction.setText("" + String.format("%3.4f min.", s.getAverageWaitingForOneLoading()));
+		averageUnloadingPerOneAction.setText("" + String.format("%3.4f min.", s.getAverageWaitingForOneUnloading()));
+		int tmp = (int) jSpinner1.getValue();
+		if(s.getActualNumberOfReplications() >  (tmp * 0.2)) {
+			chart1.addPoint(s.getAverageFinishingTime(), s.getActualNumberOfReplications());
+		}
 	}
 
 	private void updateTruck(TrucksModel t) {
@@ -105,6 +127,19 @@ public class MainGUI extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        averageLoading = new javax.swing.JLabel();
+        averageUnloading = new javax.swing.JLabel();
+        averageFinishedTime = new javax.swing.JLabel();
+        confidenceInterval = new javax.swing.JLabel();
+        averageLoadingQueue = new javax.swing.JLabel();
+        averageUnloadingQueue = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        averageLoadingPerOneAction = new javax.swing.JLabel();
+        averageUnloadingPerOneAction = new javax.swing.JLabel();
+        chart1 = new sk.fri.dissim.Chart();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -292,13 +327,37 @@ public class MainGUI extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Štatistika", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 14))); // NOI18N
 
-        jLabel7.setText("Priemerný čas čakania na naloženie:");
+        jLabel7.setText("Priemerný čas čakania vozidla na naloženie:");
 
-        jLabel8.setText("Priemerný čas čakania na vyloženie:");
+        jLabel8.setText("Priemerný čas čakania vozidla na vyloženie:");
 
         jLabel9.setText("Priemerný čas splnenia požiadavok:");
 
         jLabel10.setText("90% interval spoľahlivosti pre priemerný čas splnenia:");
+
+        jLabel11.setText("Priemerná dĺžka radu pred nakladačom:");
+
+        jLabel12.setText("Priemerná dĺžka radu pred vykladačom:");
+
+        averageLoading.setText("0");
+
+        averageUnloading.setText("0");
+
+        averageFinishedTime.setText("0");
+
+        confidenceInterval.setText("0");
+
+        averageLoadingQueue.setText("0");
+
+        averageUnloadingQueue.setText("0");
+
+        jLabel13.setText("Priemerný čas čakania vozidla pred nakladačom:");
+
+        jLabel14.setText("Priemerný čas čakania vozidla pred vykladačom:");
+
+        averageLoadingPerOneAction.setText("0");
+
+        averageUnloadingPerOneAction.setText("0");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -307,24 +366,68 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(averageFinishedTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(averageUnloadingQueue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(averageLoadingQueue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(confidenceInterval, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel14))
+                        .addGap(36, 36, 36)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(averageUnloadingPerOneAction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(averageLoadingPerOneAction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(averageUnloading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(averageLoading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel7)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(averageLoading))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(averageUnloading))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(averageLoadingPerOneAction))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel10)
-                .addContainerGap(171, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(averageUnloadingPerOneAction))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(averageFinishedTime))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(confidenceInterval))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(averageLoadingQueue))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(averageUnloadingQueue))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -340,6 +443,10 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(165, 165, 165)
+                .addComponent(chart1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,10 +456,12 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chart1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -373,18 +482,8 @@ public class MainGUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 		if(resourceTransportSimulation == null || resourceTransportSimulation.isFinished()) {
 			try {
-				resourceTransportSimulation = new ResourceTransportSimulation(jComboBox1.getSelectedIndex() + 1, (int)jSpinner1.getValue(), -1, propertyChangeSupport) {
-
-					@Override
-					protected void done() {
-
-					}
-
-					@Override
-					protected void process(List<Statistics> chunks) {
-
-					}
-				};
+				chart1.reset();
+				resourceTransportSimulation = new ResourceTransportSimulation(jComboBox1.getSelectedIndex() + 1, (int)jSpinner1.getValue(), -1, propertyChangeSupport);
 				propertyChangeSupport.firePropertyChange(FiredEventNames.SLEEP_SPEED_CHANGED, -1, jSlider1.getValue());
 				resourceTransportSimulation.execute();
 			}
@@ -433,12 +532,25 @@ public class MainGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel actualReplication;
+    private javax.swing.JLabel averageFinishedTime;
+    private javax.swing.JLabel averageLoading;
+    private javax.swing.JLabel averageLoadingPerOneAction;
+    private javax.swing.JLabel averageLoadingQueue;
+    private javax.swing.JLabel averageUnloading;
+    private javax.swing.JLabel averageUnloadingPerOneAction;
+    private javax.swing.JLabel averageUnloadingQueue;
+    private sk.fri.dissim.Chart chart1;
+    private javax.swing.JLabel confidenceInterval;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

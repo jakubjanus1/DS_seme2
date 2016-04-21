@@ -17,6 +17,10 @@ public class TrucksModel extends AbstractTableModel implements Iterable<Truck> {
 		trucks = ObjectFactory.createVariant(variant);
 	}
 
+	public int size() {
+		return trucks.size();
+	}
+
 	@Override
 	public int getRowCount() {
 		return trucks.size();

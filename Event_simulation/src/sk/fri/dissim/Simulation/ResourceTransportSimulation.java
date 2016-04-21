@@ -17,7 +17,7 @@ import sk.fri.dissim.SimCore.SimCore;
  *
  * @author Jakub Janus
  */
-public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
+public class ResourceTransportSimulation extends SimCore<Statistics>{
 
 	private int sleepInterval;
 	private final PropertyChangeSupport propertyChangeSupport;
@@ -38,6 +38,7 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 
 		//Entities initialization
 		trucks = new TrucksModel(variant);
+		getStatisticModul().setNumberOfTrucks(trucks.size());
 
 		this.propertyChangeSupport = propertyChangeSupport;
 		this.propertyChangeSupport.addPropertyChangeListener(FiredEventNames.SLEEP_SPEED_CHANGED, new PropertyChangeListener() {
@@ -95,6 +96,15 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 		return queueB;
 	}
 
+	public boolean finished() {
+		for(Truck t : trucks) {
+			if(t.getState() != TruckState.IDLE) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public Truck findFirstInTrucks(TruckState state) {
 		for(Truck t : trucks) {
 			if(t.getState() == state) {
@@ -126,7 +136,6 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 		queueA = new ArrayList<>();
 		queueB = new ArrayList<>();
 		getStatisticModul().reset();
-		getStatisticModul().setActualNumberOfReplications(actualNumberOfReplication);
 		loadingStation = null;
 		unloadingStation = null;
 		for(Truck t : trucks) {
@@ -156,8 +165,12 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 	}
 
 	@Override
-	protected abstract void done();
+	protected void done() {
+		firePropertyChange(FiredEventNames.UPDATE_STATISTICS, getStatisticModul());
+	}
 
 	@Override
-	protected abstract void process(List<Statistics> chunks);
+	protected void process(List<Statistics> chunks) {
+		firePropertyChange(FiredEventNames.UPDATE_STATISTICS, chunks.get(chunks.size() - 1));
+	}
 }
