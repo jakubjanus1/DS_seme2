@@ -38,7 +38,7 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 		while(!eventQueue.isEmpty()) {
 			event = eventQueue.remove(0);
 			simulationTime = event.getExecutionTime();
-			if(timeOfOneReplication >= simulationTime || timeOfOneReplication < 0) {
+			if((timeOfOneReplication >= simulationTime || timeOfOneReplication < 0) && customStopingCondition(event)) {
 				event.execute();
 			} else {
 				eventQueue.clear();
@@ -105,6 +105,10 @@ public abstract class SimCore<T extends Cloneable> extends SwingWorker<T, T> {
 
 	@Override
 	protected abstract void done();
+
+	protected boolean customStopingCondition(BaseEvent event) {
+		return true;
+	}
 
 	@Override
 	protected abstract void process(List<T> chunks);

@@ -63,6 +63,10 @@ public class Truck {
 		this.actualCapacity = actualCapacity;
 	}
 
+	public int getActualCapacity() {
+		return actualCapacity;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -83,16 +87,20 @@ public class Truck {
 		return waitingForLoadingTime;
 	}
 
-	public void addWaitingForLoadingTime(double time) {
-		this.waitingForLoadingTime += time - startedWaitingForLoading;
+	public double addWaitingForLoadingTime(double time) {
+		double result = time - startedWaitingForLoading;
+		this.waitingForLoadingTime += result;
+		return result;
 	}
 
 	public double getWaitingForUnloadingTime() {
 		return waitingForUnloadingTime;
 	}
 
-	public void addWaitingForUnloadingTime(double time) {
-		this.waitingForUnloadingTime += time - startedWaitingForUnloading;
+	public double addWaitingForUnloadingTime(double time) {
+		double result = time - startedWaitingForUnloading;
+		this.waitingForUnloadingTime += result;
+		return result;
 	}
 
 	public TruckState getState() {

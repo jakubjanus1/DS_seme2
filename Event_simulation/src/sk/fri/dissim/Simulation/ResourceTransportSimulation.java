@@ -6,8 +6,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import sk.fri.dissim.Entities.Truck;
+import sk.fri.dissim.Entities.TruckState;
+import sk.fri.dissim.Entities.TrucksModel;
 import sk.fri.dissim.Events.ArrivalToLoadingStationEvent;
 import sk.fri.dissim.Events.TimeTickEvent;
+import sk.fri.dissim.SimCore.BaseEvent;
 import sk.fri.dissim.SimCore.SimCore;
 
 /**
@@ -20,7 +23,7 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	// simulation entities
-	private ArrayList<Truck> trucks;
+	private TrucksModel trucks;
 	private ArrayList<Truck> queueA;
 	private ArrayList<Truck> queueB;
 	private final int NEEDED_RESOURCES = 5000;
@@ -34,7 +37,7 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 		super(numberOfReplications, timeOfOneReplication, Statistics.class);
 
 		//Entities initialization
-		trucks = ObjectFactory.createVariant(variant);
+		trucks = new TrucksModel(variant);
 
 		this.propertyChangeSupport = propertyChangeSupport;
 		this.propertyChangeSupport.addPropertyChangeListener(FiredEventNames.SLEEP_SPEED_CHANGED, new PropertyChangeListener() {
@@ -68,11 +71,11 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 	}
 
 	public double getLoadingTime(int capacity) {
-		return (capacity / (double)LOADING_SPEED) / 3600;
+		return (capacity / (double)LOADING_SPEED) * 3600;
 	}
 
 	public double getUnloadingTime(int capacity) {
-		return (capacity / (double)UNLOADING_SPEED) / 3600;
+		return (capacity / (double)UNLOADING_SPEED) * 3600;
 	}
 
 	public int getNeededResources() {
@@ -81,6 +84,7 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 
 	public void unloadResources(int capacity) {
 		neededResources -= capacity;
+		firePropertyChange(FiredEventNames.UPDATE_NEEDED_RESOURCES, neededResources);
 	}
 
 	public ArrayList<Truck> getQueueA() {
@@ -91,8 +95,13 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 		return queueB;
 	}
 
-	public ArrayList<Truck> getTrucks() {
-		return trucks;
+	public Truck findFirstInTrucks(TruckState state) {
+		for(Truck t : trucks) {
+			if(t.getState() == state) {
+				return t;
+			}
+		}
+		return null;
 	}
 
 	public Truck getLoadingStation() {
@@ -116,6 +125,8 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 		neededResources = NEEDED_RESOURCES;
 		queueA = new ArrayList<>();
 		queueB = new ArrayList<>();
+		getStatisticModul().reset();
+		getStatisticModul().setActualNumberOfReplications(actualNumberOfReplication);
 		loadingStation = null;
 		unloadingStation = null;
 		for(Truck t : trucks) {
@@ -123,14 +134,25 @@ public abstract class ResourceTransportSimulation extends SimCore<Statistics>{
 			addEvent(new ArrivalToLoadingStationEvent(t, this, 0.0));
 		}
 		addEvent(new TimeTickEvent(this, 0.0));
+		firePropertyChange(FiredEventNames.NEXT_REPLICATION, actualNumberOfReplication);
+		firePropertyChange(FiredEventNames.UPDATE_NEEDED_RESOURCES, neededResources);
 	}
 
 	public int getSleepInterval() {
 		return sleepInterval;
 	}
 
+	public void fireTrucksUpdate() {
+		firePropertyChange(FiredEventNames.UPDATE_TRUCKS, trucks);
+	}
+
 	public void firePropertyChange(String name, Object newValue){
 		propertyChangeSupport.firePropertyChange(name, null, newValue);
+	}
+
+	@Override
+	protected boolean customStopingCondition(BaseEvent event) {
+		return !(eventQueue.isEmpty() && (event instanceof TimeTickEvent)); 
 	}
 
 	@Override
